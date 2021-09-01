@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace TestDataGenerator
 {
@@ -36,31 +37,47 @@ namespace TestDataGenerator
             _ => throw new ArgumentOutOfRangeException(nameof(stringKind), stringKind, null)
         };
 
-        public static string GetDumpedPsi(this StringKind stringKind) => stringKind switch
+        public static IEnumerable<string> GetDumpedPsi(this StringKind stringKind)
         {
-            StringKind.Regular => @"    CSharpNonInterpolatedStringLiteralExpression
-      PsiElement(STRING_LITERAL_REGULAR)('""""')",
-            StringKind.Interpolated => @"    CSharpInterpolatedStringLiteralExpression
-      CSharpInterpolatedStringLiteralExpressionPart
-        PsiElement(INTERPOLATED_STRING_REGULAR)('$""""')",
-            StringKind.Verbatim => @"    CSharpNonInterpolatedStringLiteralExpression
-      PsiElement(STRING_LITERAL_VERBATIM)('@""""')",
-            StringKind.VerbatimInterpolated => @"    CSharpInterpolatedStringLiteralExpression
-      CSharpInterpolatedStringLiteralExpressionPart
-        PsiElement(INTERPOLATED_STRING_VERBATIM)('$@""""')",
-            StringKind.InterpolatedWithInsertion => @"    CSharpInterpolatedStringLiteralExpression
-      CSharpInterpolatedStringLiteralExpressionPart
-        PsiElement(INTERPOLATED_STRING_REGULAR_START)('$""{')
-      PsiElement(IDENTIFIER)('x')
-      CSharpInterpolatedStringLiteralExpressionPart
-        PsiElement(INTERPOLATED_STRING_REGULAR_END)('}""')",
-            StringKind.VerbatimInterpolatedWithInsertion => @"    CSharpInterpolatedStringLiteralExpression
-      CSharpInterpolatedStringLiteralExpressionPart
-        PsiElement(INTERPOLATED_STRING_VERBATIM_START)('$@""{')
-      PsiElement(IDENTIFIER)('x')
-      CSharpInterpolatedStringLiteralExpressionPart
-        PsiElement(INTERPOLATED_STRING_VERBATIM_END)('}""')",
-            _ => throw new ArgumentOutOfRangeException(nameof(stringKind), stringKind, null)
-        };
+            switch (stringKind)
+            {
+                case StringKind.Regular:
+                    yield return @"CSharpNonInterpolatedStringLiteralExpression";
+                    yield return @"  PsiElement(STRING_LITERAL_REGULAR)('""""')";
+                    break;
+                case StringKind.Interpolated:
+                    yield return @"CSharpInterpolatedStringLiteralExpression";
+                    yield return @"  CSharpInterpolatedStringLiteralExpressionPart";
+                    yield return @"    PsiElement(INTERPOLATED_STRING_REGULAR)('$""""')";
+                    break;
+                case StringKind.Verbatim:
+                    yield return @"CSharpNonInterpolatedStringLiteralExpression";
+                    yield return @"  PsiElement(STRING_LITERAL_VERBATIM)('@""""')";
+                    break;
+                case StringKind.VerbatimInterpolated:
+                    yield return @"CSharpInterpolatedStringLiteralExpression";
+                    yield return @"  CSharpInterpolatedStringLiteralExpressionPart";
+                    yield return @"    PsiElement(INTERPOLATED_STRING_VERBATIM)('$@""""')";
+                    break;
+                case StringKind.InterpolatedWithInsertion:
+                    yield return @"CSharpInterpolatedStringLiteralExpression";
+                    yield return @"  CSharpInterpolatedStringLiteralExpressionPart";
+                    yield return @"    PsiElement(INTERPOLATED_STRING_REGULAR_START)('$""{')";
+                    yield return @"  PsiElement(IDENTIFIER)('x')";
+                    yield return @"  CSharpInterpolatedStringLiteralExpressionPart";
+                    yield return @"    PsiElement(INTERPOLATED_STRING_REGULAR_END)('}""')";
+                    break;
+                case StringKind.VerbatimInterpolatedWithInsertion:
+                    yield return @"CSharpInterpolatedStringLiteralExpression";
+                    yield return @"  CSharpInterpolatedStringLiteralExpressionPart";
+                    yield return @"    PsiElement(INTERPOLATED_STRING_VERBATIM_START)('$@""{')";
+                    yield return @"  PsiElement(IDENTIFIER)('x')";
+                    yield return @"  CSharpInterpolatedStringLiteralExpressionPart";
+                    yield return @"    PsiElement(INTERPOLATED_STRING_VERBATIM_END)('}""')";
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(stringKind), stringKind, null);
+            }
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace TestDataGenerator
 {
@@ -22,13 +23,17 @@ namespace TestDataGenerator
                 foreach (var rightParameter in Enum.GetValues<StringKind>())
                 {
                     string fileName = $"concatenation of interpolated strings {currentIndex:00}.txt";
-                    string contents = $@"CSharpFile
-  CSharpDummyNode
-{leftParameter.GetDumpedPsi()}
-    PsiWhiteSpace(' ')
-    PsiElement(PLUS)('+')
-    PsiWhiteSpace(' ')
-{rightParameter.GetDumpedPsi()}";
+                    var contentBuilder = new StringBuilder()
+                        .AppendLine("CSharpFile")
+                        .AppendLine("  CSharpDummyNode")
+                        .AppendLine("    CSharpExpression");
+                    leftParameter.GetDumpedPsi().ForEach(line => contentBuilder.Append("      ").AppendLine(line));
+                    contentBuilder
+                        .AppendLine("      PsiWhiteSpace(' ')")
+                        .AppendLine("      PsiElement(PLUS)('+')")
+                        .AppendLine("      PsiWhiteSpace(' ')");
+                    rightParameter.GetDumpedPsi().ForEach(line => contentBuilder.Append("      ").AppendLine(line));
+                    string contents = contentBuilder.ToString();
                     File.WriteAllText($"{TestDataLocation}\\{fileName}", contents);
                     currentIndex += 1;
                 }
